@@ -1,0 +1,38 @@
+1、hibernate  查询部分字段时异常：
+	[cause=org.hibernate.PropertyNotFoundException: no appropriate co
+	原因：应该在返回的实体类中创建一个构造函数，构造函数要与HQL语句中的new 实体类(a.x,a.y,a.z)中返回的字段属性和名称类型应该一致，也就是要在实体类中添加一个
+	与new中字段、类型、顺序一致的构造方法即可。
+2、HTML5 LocalStorage 本地存储
+	先判断浏览器是否支持LocalStroage。在HTML5中，本地存储是一个Window的属性，包括localStorage和sessionStorage，前者是存储在本地的，后者只是伴随着session，一旦窗口关闭就没有了。
+		if(window.localStorage){
+		 alert('This browser supports localStorage');
+		}else{
+		 alert('This browser does NOT support localStorage');
+		}
+	存储数据的方法就是直接给window.LocalStroage添加一个属性，例如
+		localStorage.a = 3;//设置a为"3"
+		localStorage["a"] = "sfsf";//设置a为"sfsf"，覆盖上面的值
+		localStorage.setItem("b","isaac");//设置b为"isaac"
+		var a1 = localStorage["a"];//获取a的值
+		var a2 = localStorage.a;//获取a的值
+		var b = localStorage.getItem("b");//获取b的值
+		localStorage.removeItem("c");//清除c的值
+	这里最推荐使用的自然是getItem()和setItem()，清除键值对使用removeItem()。
+	如果希望一次性清除所有的键值对，可以使用clear()。另外，HTML5还提供了一个key()方法，可以在不知道有哪些键值的时候使用，例如：
+	 var stro = window.LocalStorage;
+	 function showStorage(){
+	 	document.write(storage.key(i)+ " : " + storage.getItem(storage.key(i)) + "<br>");
+	 }
+
+	 HTML5的本地存储，还提供了一个storage事件，可以对键值对的改变进行监听，使用如下：
+	 	if(window.addEventListener){
+	 		window.addEventListener("storage",handle_storage,false);
+	 	}else if(window.attachEvent){
+	 		window.attachEvent("onstorage",handle_storage);
+	 	}
+	 	function handle_storage(e){
+	 		if(!e){
+	 			e = window.event;
+	 		}
+	 	}
+	 不同浏览器无法共享localStorage或sessionStorage中的信息。相同浏览器的不同页面间可以共享相同的localStorage（页面属于相同域名和端口），但是不同页面或标签页间无法共享sessionStorage的信息。这里需要注意的是，页面及标签页仅指顶级窗口，如果一个标签页包含多个iframe标签且他们属于同源页面，那么他们之间是可以共享sessionStorage的。
