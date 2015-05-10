@@ -36,3 +36,118 @@
 	 		}
 	 	}
 	 不同浏览器无法共享localStorage或sessionStorage中的信息。相同浏览器的不同页面间可以共享相同的localStorage（页面属于相同域名和端口），但是不同页面或标签页间无法共享sessionStorage的信息。这里需要注意的是，页面及标签页仅指顶级窗口，如果一个标签页包含多个iframe标签且他们属于同源页面，那么他们之间是可以共享sessionStorage的。
+3、Junit测试工具的使用
+	测试方法上必须用@Test进行修饰且必须为public void，不能带任何的参数
+	测试类的包应该和被测试类的包保持一致，测试单元中的每个方法必须可以独立测试，测试方法之间不能有任何的依赖。
+	测试类最好使用Test作为后缀，测试方法最好以test作为前缀
+	Junit中的注解
+	@Test：将一个普通的方法定义为一个测试类
+		@Test(expected=XXX.class)
+		@Test(timeout=毫秒)
+	@BeforeClass：他会在所有的方法前被运行，static修饰
+	@AfterClass：他会在所有的方法后被运行，static修饰
+	@Before：会在每个测试方法被运行前执行一次
+	@After：会在每个测试方法被运行后执行一次
+	@Ignore：所修饰的测试方法会被测试运行器所忽略
+	@RunWith：可以更改测试运行器org.junit.runner.Runner
+	一次测试多个数据步骤
+	1.更改默认的测试运行器为RunWith(Parameterized.class)
+	2.声明变量来存放预期值和结果值
+	3.声明一个返回值为Collection的公共静态方法，并使用@Paremeters进行修饰
+	4.为测试类声明一个带有参数的构造方法，并在其中为其变量赋值
+4、进程和线程
+	进程是程序(任务)的执行过程，它持有资源(共享内存，共享文件)和线程
+	线程是系统中最小的执行单元，同一个进程中有多个线程，线程共享进程的资源。
+
+	线程的两种实现方法：Thread Class和 Runnable  interface
+	Thread中常用方法：	Thread()创建线程
+						Start()启动线程
+						sleep()线程休眠
+						join()使其他线程等待当前线程运行终止
+						yield()当前运行线程释放处理器资源
+						static Thread currentThread()返回当前的线程引用
+	终止线程的方法：
+		stop()不推荐使用(错误的方法)，使用stop()会使线程突然停止，
+			不能正常运行结束线程后的清理程序。
+		设置退出标志(正确的方法),能执行完整的业务流程。
+		interrupt()不是正确的停止线程的方法，使用线程中断标志位可以停止线程运行，
+			如下：
+			public class WrongStopThread extends Thread {
+	
+				public static void main(String[] args){
+					WrongStopThread thread= new WrongStopThread();
+					System.out.println("Starting Thread");
+					thread.start();//启动线程
+					try {
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					System.out.println("Interrupt Thread");
+					thread.interrupt();//调用线程的interrupt方法
+					try {
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					System.out.println("Stopping Application");
+				}
+			
+				public void run(){
+					while(!this.isInterrupted()){//判断中断标志位
+						System.out.println("Thread is Running……");
+						/**
+						*下面这段代码等同于sleep(1000)，但是对于处于sleep，join
+						*等操作的线程，如果被调用interrupt()后，会抛出
+						*InterruptedException，然后线程的中断标志位会由true重置
+						*为false，因为线程为了处理异常已经重新处于就绪状态。 
+						*/
+						long time = System.currentTimeMillis();
+						while((System.currentTimeMillis()-time<1000)){
+							//为减少屏幕输出的空循环 
+						}
+					}
+				}
+			}
+	线程的互斥和同步
+		互斥的实现：synchronized(intrinsic lock)
+		同步的实现：wait()/notify()/notifyAll()
+		如下代码展示了线程的互斥和同步
+		private final Object lockObj = new Object();
+		public void transfer(int from, int to, double amount){
+		 
+		 synchronized(lockObj){
+//			 if (energyBoxes[from] < amount)
+//				 return;
+			//while循环，保证条件不满足时任务都会被条件阻挡
+			 //而不是继续竞争CPU资源
+			 while (energyBoxes[from] < amount){
+				 try {
+					//条件不满足, 将当前线程放入Wait Set
+					lockObj.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			 }
+			 System.out.print(Thread.currentThread().getName());
+			 energyBoxes[from] -= amount;
+			 System.out.printf("从%d转移%10.2f单位能量到%d", from, amount, to);
+			 energyBoxes[to] += amount;
+			 System.out.printf(" 能量总和：%10.2f%n", getTotalEnergies());
+			//唤醒所有在lockObj对象上等待的线程
+			 lockObj.notifyAll();
+		 }
+	 }
+	 JMM(java Memory Mode)描述了Java如何通过内存进行交互
+	 happens-before原则：偏序关系，如果hb(a,b)，那么a及之前的写操作在另一个线程t	1进行了b操作时都对t1可见（同一个线程就不会有可见性问题）
+	 happens-before关系有个很重要的性质，就是传递性，即，如果hb(a,b),hb(b,c)		，则有hb(a,c)。
+	volatile：用volatile修饰的变量，线程在每次使用变量的时候，都会读取变量修改后	的值。
+
+	多线程常用到的交互模型:
+		Producer-Consumer模型
+		Read-Write Lock模型
+		Future  模型
+		Worker Thread模型
+5、Runnable和Thread两种方式的比较
+	Runnable方式可以避免Thread方式由于Java单继承特性带来的缺陷
+	Runnable的代码可以被多个线程（Thread实例）共享，适合于多个线程处理同一资源的情况。
