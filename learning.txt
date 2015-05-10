@@ -138,6 +138,7 @@
 			 lockObj.notifyAll();
 		 }
 	 }
+	 Wait Set:
 	 JMM(java Memory Mode)描述了Java如何通过内存进行交互
 	 happens-before原则：偏序关系，如果hb(a,b)，那么a及之前的写操作在另一个线程t	1进行了b操作时都对t1可见（同一个线程就不会有可见性问题）
 	 happens-before关系有个很重要的性质，就是传递性，即，如果hb(a,b),hb(b,c)		，则有hb(a,c)。
@@ -151,3 +152,21 @@
 5、Runnable和Thread两种方式的比较
 	Runnable方式可以避免Thread方式由于Java单继承特性带来的缺陷
 	Runnable的代码可以被多个线程（Thread实例）共享，适合于多个线程处理同一资源的情况。
+6、线程的生命周期
+	创建-就绪-（阻塞）-运行-终止
+7、守护线程
+	Java中的线程有两类：
+		用户线程：运行在前台，执行具体的任务
+		守护线程：运行在后台，为其他的前台线程服务
+			特点：一旦所有用户线程都结束运行，守护线程会随着JVM一起结束工作
+			应用：数据库连接池中的监测线程，JVM虚拟机启动后的监测线程，垃圾回收线程
+	设置：通过调用Thread类的setDaemon(true)方法设置当前线程为守护线程
+	注意：1.setDaemon()必须在start()方法之前调用，否则会
+			抛出IllegalThreadStateException异常
+		2.在守护线程中产生的新线程也是守护线程
+		3.不是所有的任务都可以分配给守护线程来执行，比如读写操作或计算逻辑
+8、jstack的使用
+	作用：生成JVM当前时刻线程的快照(threaddump,即当前进程中所有线程信息)
+	目的：帮助定位程序问题出现的原因，如长时间停顿，CPU占用率过高等。
+	使用方法：
+		在DOS窗口输入jstack -l <pid>(进程的pid)
