@@ -225,3 +225,20 @@
 	init()初始化方法
 	doFilter()实际过滤操作，FilterChain参数可以调用chain.doFilter方法，将请求传给下一个过滤器或目标资源，或利用转发，重定向调用其他资源
 	destory()释放过滤器占用资源
+	过滤器的分类：
+		REQUEST:用户直接访问页面时，Web容器会调用request过滤器
+		FORWARD:目标资源是通过RequestDispatcher的forward访问时，该过滤器将被调用
+		INCLUDE:目标资源是通过RequestDispatcher的include访问时，该过滤器将被调用
+		ERROR:目标资源是通过声明式异常处理机制调用时，过滤器将被调用
+11.在Strust2中的action的三种实现方式：
+	1.写一个普通的javabean，但是要求该javabean中有一个方法满足如下格式：
+		public String execute(){return "";}
+	2.写一个javabean实现Xwork中的Action接口，并且实现execute方法；
+	3.写一个javabean继承Xwork中的ActionSupport类，重写execute方法。
+12.Strust2中的路径问题
+	路径分为两种：绝对路径、相对路径
+	在web应用中路径推荐使用绝对路径，实现绝对路径有两种方式：
+		1.在jsp页面的head标签中添加base标签，指定整个页面的基础路径。
+		2.在链接中直接添加basePath
+		(basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContentPath()+"/")
+		
