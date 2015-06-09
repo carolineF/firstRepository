@@ -241,4 +241,32 @@
 		1.在jsp页面的head标签中添加base标签，指定整个页面的基础路径。
 		2.在链接中直接添加basePath
 		(basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContentPath()+"/")
-		
+13.Spring中的ApplicationContext
+	简单的用ApplicationContext做测试的话,获得Spring中定义的Bean实例(对象).可以用:
+		ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
+		RegisterDAO registerDAO = (RegisterDAO)ac.getBean("RegisterDAO");
+	如果是两个以上:
+		ApplicationContext ac = new ClassPathXmlApplicationContext(new String[]{"applicationContext.xml","dao.xml"});
+	或者用通配符:
+		ApplicationContext ac = new ClassPathXmlApplicationContext("classpath:/*.xml");
+	 spring为ApplicationContext提供的3种实现分别为：ClassPathXmlApplicationContext， FileSystemXmlApplicationContext和XmlWebApplicationContext，其中 XmlWebApplicationContext是专为Web工程定制的。
+	 使用举例如下： 
+   	1. FileSystemXmlApplicationContext 
+     	eg1.
+		pplicationContext ctx = new FileSystemXmlApplicationContext("bean.xml"); //加载单个配置文件  
+		eg2.
+		String[] locations = {"bean1.xml", "bean2.xml", "bean3.xml"};  
+		ApplicationContext ctx = new FileSystemXmlApplicationContext(locations ); //加载多个配置文件  
+		eg3.      
+		ApplicationContext ctx =new FileSystemXmlApplicationContext("D:roject/bean.xml");//根据具体路径加载文件  
+     2.ClassPathXmlApplicationContext
+		eg1.    
+		pplicationContext ctx = new ClassPathXmlApplicationContext("bean.xml");  
+		 eg2.  
+		String[] locations = {"bean1.xml", "bean2.xml", "bean3.xml"};  
+		ApplicationContext ctx = new ClassPathXmlApplication(locations);  
+		注：其中FileSystemXmlApplicationContext和ClassPathXmlApplicationContext与BeanFactory的xml文件定位方式一样是基于路径的。  
+	3. XmlWebApplicationContext 
+		eg1.  
+		ServletContext servletContext = request.getSession().getServletContext();      
+		ApplicationContext ctx = WebApplicationContextUtils.getWebApplicationContext(servletContext);
